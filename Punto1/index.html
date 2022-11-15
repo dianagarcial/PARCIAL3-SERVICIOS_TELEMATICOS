@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+ 
+  
+
+
+    <title>Parcial Servicios telematicos</title>
+</head>
+
+<style>
+    .lista-s {
+        margin: 20px;
+        height: 80vh;
+        overflow: auto;
+    }
+
+    .lista {
+        margin: 20px;
+        margin-bottom: 10px;
+        margin-top: 100px;
+
+    }
+
+    .editar {
+        grid-area: 2 / 2 / 3 / 3;
+    }
+
+    section.nuevo {
+        margin: 40px;
+        margin-top: 20px;
+    }
+
+    li.list-group-item {
+
+        margin-top: 10px;
+
+    }
+
+    nav.navbar.fixed-top {
+
+        background: #401F7A;
+
+    }
+    button.btn.btn-primary{
+        background: #401F7A;
+        border: #401F7A;
+    }
+</style>
+
+<body>
+    <nav class="navbar fixed-top">
+        <div class="container-fluid">
+            <a style="color: white;" class="navbar-brand" href="/index.html">CRUD Biblioteca</a>
+        </div>
+    </nav>
+
+    <section class="lista">
+
+        <h2>Lista de Libros</h2>
+        <section class="lista-s">
+
+            <ul id="lista" class="list-group">
+
+            </ul>
+        </section>
+    </section>
+
+
+    <section class="nuevo">
+        <h2>Agregar un Libro</h2>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Titulo:</label>
+            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Title" />
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Descripción:</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                placeholder="Description"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput2" class="form-label">Autor:</label>
+            <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="Author" />
+        </div>
+
+        <button onclick="nuevo()" class="btn btn-primary">Agregar</button>
+    </section>
+
+    <section class="nuevo">
+        <h2>Actualizar un Libro</h2>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">ID:</label>
+            <input type="text" class="form-control" id="exampleFormControlInput3" placeholder="Id Buscado" />
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">Titulo:</label>
+            <input type="text" class="form-control" id="exampleFormControlInput4" placeholder="Title" />
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Descripción:</label>
+            <textarea class="form-control" id="exampleFormControlTextarea2" rows="3"
+                placeholder="Description"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlInput2" class="form-label">Autor:</label>
+            <input type="text" class="form-control" id="exampleFormControlInput5" placeholder="Author" />
+        </div>
+
+        <button onclick="actualizar()" class="btn btn-primary">Actualizar</button>
+    </section>
+
+    <section class="nuevo">
+        <h2>Eliminar un Libro</h2>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">ID:</label>
+            <input type="text" class="form-control" id="exampleFormControlInput6"
+                placeholder="Id del libro a eliminar" />
+        </div>
+
+        <button onclick="eliminar()" class="btn btn-primary"> Eliminar</button>
+    </section>
+
+    <section class="nuevo">
+        <h2>Buscar el libro</h2>
+        <div class="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">ID:</label>
+            <input type="text" class="form-control" id="exampleFormControlInput7" placeholder="Id del libro buscado" />
+            <ul id="listabus" class="list-group">
+
+
+            </ul>
+        </div>
+
+        <button onclick="buscarelid()" class="btn btn-primary"> Buscar libro</button>
+    </section>
+
+
+
+    <script>
+        
+   
+       
+        const API_URL = 'http://192.168.60.3:5000';
+        const xhr = new XMLHttpRequest();
+        function onRequestHandler() {
+            if (this.readyState == 4 && this.status == 200) {
+
+                const data = JSON.parse(this.response);
+                console.log(data);
+                const HTMLResponse = document.querySelector('#lista');
+
+                const tpl = data.books.map(book => `<li class="list-group-item"><b>${book.id}</b><p><b>Titulo:</b>${book.title}</p><p><b>Descripcion:</b>${book.description}</p><p><b>Autor:</b>${book.author}</p></li>`);
+                // <li class="list-group-item"><b class="_id"></b><p></p></li>
+                HTMLResponse.innerHTML = `${tpl}`
+            }
+        }
+
+        xhr.addEventListener("load", onRequestHandler);
+        xhr.open("GET", `${API_URL}/books`);
+        xhr.send();
+
+
+        //Función Nuevo
+        function nuevo() {
+
+            var book = {
+                title: "",
+                description: "",
+                author: ""
+            }
+
+            book["title"] = document.getElementById("exampleFormControlInput1").value;
+            book["description"] = document.getElementById("exampleFormControlTextarea1").value;
+            book["author"] = document.getElementById("exampleFormControlInput2").value;
+
+
+            axios.post('http://192.168.60.3:5000/books', book, {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                    "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
+                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+                }
+            }
+            )
+                .then(response => {
+                    const added = response.data;
+                    console.log(`POST: `, added);
+
+                    alert('Se ha creado con exito')
+
+                })
+                .catch(error => console.error(error));
+        };
+
+        //Función Nuevo
+        function actualizar() {
+            let id = document.getElementById("exampleFormControlInput3").value;
+
+
+            let title = document.getElementById("exampleFormControlInput4").value;
+            let description = document.getElementById("exampleFormControlTextarea2").value;
+            let author = document.getElementById("exampleFormControlInput5").value;
+
+
+            var book = {
+                title,
+                description,
+                author
+            }
+
+
+
+
+            axios.put('http://192.168.60.3:5000/books/' + id, book, {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                    "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
+                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+                }
+            }
+            )
+                .then(response => {
+                    const added = response.data;
+                    console.log(`PUT: `, added);
+                    alert('Se ha actualizado con exito')
+                })
+                .catch(error => console.error(error));
+        };
+
+
+        function eliminar() {
+            let id = document.getElementById("exampleFormControlInput6").value;
+
+
+
+
+            axios.delete('http://192.168.60.3:5000/books/' + id, {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                    "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
+                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+                }
+            }
+            )
+                .then(response => {
+                    const added = response.data;
+                    console.log(`DELETE: `, added);
+                    alert('Se ha eliminado con exito')
+                })
+                .catch(error => console.error(error));
+        };
+
+        function buscarelid() {
+            let id = document.getElementById("exampleFormControlInput7").value;
+
+
+            axios.get('http://192.168.60.3:5000/books/' + id, {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                    "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
+                    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+                }
+            }
+            )
+                .then(response => {
+                    const busca = response.data;
+                    console.log(`GET: `, busca);
+
+
+                    const HTMLResponse = document.querySelector('#listabus');
+
+                    const tpl1 = `<li class="list-group-item"><b>La informacion del libro buscado es:</b><p><b>Titulo: </b>${busca.book.title}</p><p><b>Descripcion: </b>${busca.book.description}</p> <p><b>Autor: </b>${busca.book.author}</p></li>`;
+
+                    HTMLResponse.innerHTML = `${tpl1}`
+
+                })
+                .catch(error => console.error(error));
+        };
+
+
+    </script>
+
+</body>
+
+</html>

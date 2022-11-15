@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"C:/Users/diama/OneDrive/Escritorio/Proyecto3Servicios/APIRestFlaskMySQL","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
